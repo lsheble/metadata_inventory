@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="L Sheble">
-<meta name="dcterms.date" content="2023-06-14">
+<meta name="dcterms.date" content="2023-06-16">
 
 <title>Metadata Inventory - Column Metadata</title>
 <style>
@@ -172,7 +172,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">June 14, 2023</p>
+        <p class="date">June 16, 2023</p>
       </div>
     </div>
     
@@ -309,7 +309,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>In the table, ‘min’ and ‘max’ are the minimum and maximum number of characters in the field.</p>
+<p><strong>Key</strong></p>
+<ul>
+<li>n_missing: Sum of NA and NULL (i.e.&nbsp;missing) values.</li>
+<li>complete rate: Sum of values that are not NA or NULL (i.e., missing) values.</li>
+<li>min: minimum number of characters.</li>
+<li>max: maximum number of characters.</li>
+<li>empty: number of blank values - or empty strings (““).</li>
+<li>n_unique: number of unique values.</li>
+<li>whitespace: number of rows containing only whitespace values using the s+ regular expression.</li>
+</ul>
 </section>
 <section id="column-level-metadata-grouped-by-data-set" class="level2">
 <h2 class="anchored" data-anchor-id="column-level-metadata-grouped-by-data-set">Column-level Metadata, Grouped by Data Set</h2>

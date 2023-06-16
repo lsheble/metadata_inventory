@@ -1,7 +1,7 @@
 ---
 title: "Column Metadata"
 author: "L Sheble"
-date: "2023-06-14"
+date: "2023-06-16"
 categories: [metadata, inventory, to do]
 image: "skim_metadata_columns.png"
 code-fold: true
@@ -83,7 +83,16 @@ metadata_columns_all %>%
 
 
 ```
-In the table, 'min' and 'max' are the minimum and maximum number of characters in the field.
+
+**Key**
+
+- n_missing: Sum of NA and NULL (i.e. missing) values.
+- complete rate: Sum of values that are not NA or NULL (i.e., missing) values.
+- min: minimum number of characters. 
+- max: maximum number of characters.
+- empty: number of blank values - or empty strings ("").
+- n_unique: number of unique values.
+- whitespace: number of rows containing only whitespace values using the s+ regular expression.
 
 
 ## Column-level Metadata, Grouped by Data Set
