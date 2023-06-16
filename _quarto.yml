@@ -16,6 +16,7 @@ format:
       light: cosmo
       dark: slate
     css: styles.css
+    page-layout: full
 
 
 
