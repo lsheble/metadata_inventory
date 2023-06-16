@@ -1,0 +1,158 @@
+---
+title: "Data Set Metadata"
+author: "L Sheble"
+date: "2023-06-14"
+categories: [metadata, inventory, to do]
+image: "dataset_record_1.png"
+code-fold: true
+
+---
+
+
+
+
+```{r} 
+#| label: load-libraries
+#| output: false
+#| warning: false
+#| include: false
+library(DBI)
+library(odbc)
+library(dbplyr)
+library(dplyr)
+library(inspectdf)
+library(stringr)
+library(forcats)
+library(ggplot2)
+library(lubridate)
+library(gridExtra)
+library(DT)
+library(plotly)
+library(funModeling)
+# library(ggsankey)
+# library(scales)
+```
+
+
+
+
+```{r}
+#| label: db_conxn
+#| include: false
+con <- dbConnect(odbc::odbc(), "Warehouse", timeout = 10)
+```
+
+
+
+```{r}
+#| label: metadata-datasets
+#| cache: true
+#| include: false
+
+metadata_datasets_all <- 
+  tbl(con, in_schema("dbt_metadata", "datasets")) %>%
+# select(layer_name, type, service_item_id, description, ) %>%
+#  arrange(layer_name) %>%
+  collect()
+
+```
+
+
+```{r}
+#| include: false
+metadata_datasets_all %>% datatable()
+# %>% knitr::kable()
+```
+
+
+
+
+```{r}
+#| label: subset-plus-word-counts
+
+datasets <- metadata_datasets_all %>% mutate(desc_words = str_count(description, "\\w+"),
+                                 snippet_words = str_count(snippet, "\\w+"),
+                                 credit_words = str_count(access_information, "\\w+"),
+                                 tags = str_split(str_remove_all(tags, '\\{|\\}'), ",")) %>%
+  mutate(tag_words = (unlist(lengths(tags)))) %>%
+  select(feature_service_name, owner, desc_words, snippet_words, tag_words, credit_words, creation_date) %>%
+  arrange(feature_service_name) 
+  
+```
+
+
+
+
+```{r}
+#| include: false
+#| label: select-fields
+
+datasets %>%
+  select(feature_service_name, owner, desc_words, snippet_words, tag_words, credit_words, creation_date) %>%
+  arrange(feature_service_name) 
+  # knitr::kable()
+```
+
+## All Data Sets
+
+Item count: `r dim(datasets)[1]`
+
+
+## OpenDataAdmin Data Sets
+
+
+```{r}
+datasets %>%
+  filter(owner == "OpenDataAdmin_detroitmi") %>%
+  select(-owner) %>%
+ #  knitr::kable()
+  datatable()
+```
+
+
+## Data Sets owned by others
+```{r}
+#| label: other-owners
+ 
+datasets %>%
+  filter(owner != "OpenDataAdmin_detroitmi") %>%
+ # select(-owner) %>%
+ #  knitr::kable()
+  datatable()
+```
+
+
+```{r}
+#| include: false
+# metadata_datasets_cats <- metadata_datasets_all %>% select()
+
+freq(metadata_datasets_all[,10])
+
+
+```
+
+
+```{sql}
+#| connection: con
+#| include: false
+
+SELECT owner, feature_service_name, creation_date, snippet, tags
+FROM dbt_metadata.datasets
+WHERE owner NOT LIKE 'OpenDataAdmin_detroitmi'
+ORDER BY owner
+
+```
+
+
+```{sql}
+#| connection: con 
+#| include: false
+
+SELECT owner, feature_service_name, creation_date, snippet, tags
+FROM dbt_metadata.datasets
+WHERE feature_service_name ILIKE 'Review%'
+ORDER BY owner
+
+```
+
+

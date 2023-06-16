@@ -1,0 +1,118 @@
+---
+title: "Column Metadata"
+author: "L Sheble"
+date: "2023-06-14"
+categories: [metadata, inventory, to do]
+image: "skim_metadata_columns.png"
+code-fold: true
+---
+
+
+
+```{r} 
+#| label: load-libraries
+#| output: false
+#| warning: false
+#| include: false
+
+library(DBI)
+library(odbc)
+library(dbplyr)
+library(dplyr)
+# library(inspectdf)
+library(stringr)
+library(forcats)
+library(ggplot2)
+# library(lubridate)
+library(gridExtra)
+library(DT)
+library(plotly)
+library(skimr)
+# library(janitor)
+# library(ggsankey)
+# library(scales)
+```
+
+
+
+
+```{r}
+#| label: db_conxn
+#| include: false
+con <- dbConnect(odbc::odbc(), "Warehouse", timeout = 10)
+```
+
+
+
+```{r}
+#| label: collect columns
+#| cache: true
+#| include: false
+
+metadata_columns_all <- 
+  tbl(con, in_schema("dbt_metadata", "columns")) %>%
+  select(everything()) %>%
+  collect()
+
+```
+
+
+## Overview: All Columns
+
+
+Filtered out rows that matched
+
+- type = "esriFieldTypeOID"
+- feature_service_name = "Review"
+ 
+
+Future
+
+- join on feature_service_name to identify which are owned by OpenDataAdmin and which are not
+- maybe drop deprecated data sets
+
+
+```{r}
+#| label: column_summary
+metadata_columns_all %>%
+  filter(type != "esriFieldTypeOID") %>%
+  filter(feature_service_name != "Review") %>%
+  mutate(column_label = if_else(field_name != field_alias, field_alias, NA)) %>%
+  select(-c(feature_service_name, layer_name, field_name, field_alias, type)) %>%
+  skim(.data_name = "column-level metadata")
+
+
+```
+
+
+
+## Column-level Metadata, Grouped by Data Set
+
+
+
+```{r}
+#| label: columns-by-ds
+
+metadata_columns_all %>%
+ # select(feature_service_name, field_name, field_alias, field_value_type, description) %>%
+  group_by(feature_service_name) %>%
+#  tally(name = "column count") %>%
+  summarise(column_count = n()-1, to_describe = sum(is.na(description))-1 , pct_complete = round((((column_count-to_describe)/column_count)*100), digits = 2), .groups = 'keep') %>%
+  datatable()
+  
+#  summarise(descriptions = n(description))
+```
+
+
+## Search Column-level Metadata
+
+
+```{r}
+#| label: all-columns
+
+metadata_columns_all %>%
+  select(feature_service_name, field_name, field_alias, field_value_type, description) %>%
+  arrange(feature_service_name) %>%
+  datatable()
+```
+

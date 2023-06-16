@@ -3,17 +3,18 @@ project:
   output-dir: docs
 
 website:
-  title: "metadata_inventory"
+  title: "Metadata Inventory"
   navbar:
     right:
       - about.qmd
       - icon: github
-        href: https://github.com/
-      - icon: twitter
-        href: https://twitter.com
+        href: https://github.com/lsheble/metadata_inventory
+
 format:
   html:
-    theme: cosmo
+    theme: 
+      light: cosmo
+      dark: slate
     css: styles.css
 
 

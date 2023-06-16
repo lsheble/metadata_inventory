@@ -9,22 +9,64 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "metadata_inventory",
+    "title": "Metadata Inventory",
     "section": "",
-    "text": "Post With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJun 16, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJun 13, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Column Metadata\n\n\n\n\n\n\n\nmetadata\n\n\ninventory\n\n\nto do\n\n\n\n\n\n\n\n\n\n\n\nJun 14, 2023\n\n\nL Sheble\n\n\n\n\n\n\n  \n\n\n\n\nData Set Metadata\n\n\n\n\n\n\n\nmetadata\n\n\ninventory\n\n\nto do\n\n\n\n\n\n\n\n\n\n\n\nJun 14, 2023\n\n\nL Sheble\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "posts/post-with-code/index.html",
-    "href": "posts/post-with-code/index.html",
-    "title": "Post With Code",
+    "objectID": "posts/column-metadata/index.html",
+    "href": "posts/column-metadata/index.html",
+    "title": "Column Metadata",
     "section": "",
-    "text": "This is a post with executable code.\n\n1 + 1\n\n[1] 2"
+    "text": "Filtered out rows that matched\n\ntype = “esriFieldTypeOID”\nfeature_service_name = “Review”\n\nFuture\n\njoin on feature_service_name to identify which are owned by OpenDataAdmin and which are not\nmaybe drop deprecated data sets\n\n\n\nCode\nmetadata_columns_all %&gt;%\n  filter(type != \"esriFieldTypeOID\") %&gt;%\n  filter(feature_service_name != \"Review\") %&gt;%\n  mutate(column_label = if_else(field_name != field_alias, field_alias, NA)) %&gt;%\n  select(-c(feature_service_name, layer_name, field_name, field_alias, type)) %&gt;%\n  skim(.data_name = \"column-level metadata\")\n\n\n\nData summary\n\n\nName\ncolumn-level metadata\n\n\nNumber of rows\n1784\n\n\nNumber of columns\n3\n\n\n_______________________\n\n\n\nColumn type frequency:\n\n\n\ncharacter\n3\n\n\n________________________\n\n\n\nGroup variables\nNone\n\n\n\nVariable type: character\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmin\nmax\nempty\nn_unique\nwhitespace\n\n\n\n\ndescription\n1529\n0.14\n0\n510\n15\n192\n0\n\n\nfield_value_type\n1529\n0.14\n0\n19\n192\n11\n0\n\n\ncolumn_label\n1327\n0.26\n0\n48\n3\n310\n0"
   },
   {
-    "objectID": "posts/welcome/index.html",
-    "href": "posts/welcome/index.html",
-    "title": "Welcome To My Blog",
+    "objectID": "posts/column-metadata/index.html#overview-all-columns",
+    "href": "posts/column-metadata/index.html#overview-all-columns",
+    "title": "Column Metadata",
     "section": "",
-    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+    "text": "Filtered out rows that matched\n\ntype = “esriFieldTypeOID”\nfeature_service_name = “Review”\n\nFuture\n\njoin on feature_service_name to identify which are owned by OpenDataAdmin and which are not\nmaybe drop deprecated data sets\n\n\n\nCode\nmetadata_columns_all %&gt;%\n  filter(type != \"esriFieldTypeOID\") %&gt;%\n  filter(feature_service_name != \"Review\") %&gt;%\n  mutate(column_label = if_else(field_name != field_alias, field_alias, NA)) %&gt;%\n  select(-c(feature_service_name, layer_name, field_name, field_alias, type)) %&gt;%\n  skim(.data_name = \"column-level metadata\")\n\n\n\nData summary\n\n\nName\ncolumn-level metadata\n\n\nNumber of rows\n1784\n\n\nNumber of columns\n3\n\n\n_______________________\n\n\n\nColumn type frequency:\n\n\n\ncharacter\n3\n\n\n________________________\n\n\n\nGroup variables\nNone\n\n\n\nVariable type: character\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmin\nmax\nempty\nn_unique\nwhitespace\n\n\n\n\ndescription\n1529\n0.14\n0\n510\n15\n192\n0\n\n\nfield_value_type\n1529\n0.14\n0\n19\n192\n11\n0\n\n\ncolumn_label\n1327\n0.26\n0\n48\n3\n310\n0"
+  },
+  {
+    "objectID": "posts/column-metadata/index.html#column-level-metadata-grouped-by-data-set",
+    "href": "posts/column-metadata/index.html#column-level-metadata-grouped-by-data-set",
+    "title": "Column Metadata",
+    "section": "Column-level Metadata, Grouped by Data Set",
+    "text": "Column-level Metadata, Grouped by Data Set\n\n\nCode\nmetadata_columns_all %&gt;%\n # select(feature_service_name, field_name, field_alias, field_value_type, description) %&gt;%\n  group_by(feature_service_name) %&gt;%\n#  tally(name = \"column count\") %&gt;%\n  summarise(column_count = n()-1, to_describe = sum(is.na(description))-1 , pct_complete = round((((column_count-to_describe)/column_count)*100), digits = 2), .groups = 'keep') %&gt;%\n  datatable()\n\n\n\n\n\n\n\nCode\n#  summarise(descriptions = n(description))"
+  },
+  {
+    "objectID": "posts/column-metadata/index.html#search-column-level-metadata",
+    "href": "posts/column-metadata/index.html#search-column-level-metadata",
+    "title": "Column Metadata",
+    "section": "Search Column-level Metadata",
+    "text": "Search Column-level Metadata\n\n\nCode\nmetadata_columns_all %&gt;%\n  select(feature_service_name, field_name, field_alias, field_value_type, description) %&gt;%\n  arrange(feature_service_name) %&gt;%\n  datatable()"
+  },
+  {
+    "objectID": "posts/data-set-metadata/index.html",
+    "href": "posts/data-set-metadata/index.html",
+    "title": "Data Set Metadata",
+    "section": "",
+    "text": "Code\ndatasets &lt;- metadata_datasets_all %&gt;% mutate(desc_words = str_count(description, \"\\\\w+\"),\n                                 snippet_words = str_count(snippet, \"\\\\w+\"),\n                                 credit_words = str_count(access_information, \"\\\\w+\"),\n                                 tags = str_split(str_remove_all(tags, '\\\\{|\\\\}'), \",\")) %&gt;%\n  mutate(tag_words = (unlist(lengths(tags)))) %&gt;%\n  select(feature_service_name, owner, desc_words, snippet_words, tag_words, credit_words, creation_date) %&gt;%\n  arrange(feature_service_name)"
+  },
+  {
+    "objectID": "posts/data-set-metadata/index.html#all-data-sets",
+    "href": "posts/data-set-metadata/index.html#all-data-sets",
+    "title": "Data Set Metadata",
+    "section": "All Data Sets",
+    "text": "All Data Sets\nItem count: 153"
+  },
+  {
+    "objectID": "posts/data-set-metadata/index.html#opendataadmin-data-sets",
+    "href": "posts/data-set-metadata/index.html#opendataadmin-data-sets",
+    "title": "Data Set Metadata",
+    "section": "OpenDataAdmin Data Sets",
+    "text": "OpenDataAdmin Data Sets\n\n\nCode\ndatasets %&gt;%\n  filter(owner == \"OpenDataAdmin_detroitmi\") %&gt;%\n  select(-owner) %&gt;%\n #  knitr::kable()\n  datatable()"
+  },
+  {
+    "objectID": "posts/data-set-metadata/index.html#data-sets-owned-by-others",
+    "href": "posts/data-set-metadata/index.html#data-sets-owned-by-others",
+    "title": "Data Set Metadata",
+    "section": "Data Sets owned by others",
+    "text": "Data Sets owned by others\n\n\nCode\ndatasets %&gt;%\n  filter(owner != \"OpenDataAdmin_detroitmi\") %&gt;%\n # select(-owner) %&gt;%\n #  knitr::kable()\n  datatable()"
   }
 ]
