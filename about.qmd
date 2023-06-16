@@ -13,4 +13,4 @@ about:
 
 ---
 
-About this blog
+Trying out the quarto blog framework!
