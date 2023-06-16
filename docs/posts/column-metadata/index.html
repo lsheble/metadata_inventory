@@ -309,9 +309,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
+<p>In the table, ‘min’ and ‘max’ are the minimum and maximum number of characters in the field.</p>
 </section>
 <section id="column-level-metadata-grouped-by-data-set" class="level2">
 <h2 class="anchored" data-anchor-id="column-level-metadata-grouped-by-data-set">Column-level Metadata, Grouped by Data Set</h2>
+<p>Columns counts summarized by data set to identify the number of columns (‘column_count’), the number of columns that do not yet have descriptions (‘to_describe’) and the proportion of columns that have been described.</p>
+<p>The identifier column created and assigned by Esri (column data type = “esriFieldTypeOID”) is not included in the counts.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -335,6 +338,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="search-column-level-metadata" class="level2">
 <h2 class="anchored" data-anchor-id="search-column-level-metadata">Search Column-level Metadata</h2>
+<p>Table that lists the data set, field name, field alias, field value type, and description for each column - or attribute - in odp data sets. Each row is a data set attribute (a.k.a. ‘column’).</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
