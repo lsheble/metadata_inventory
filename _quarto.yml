@@ -12,9 +12,9 @@ website:
 
 format:
   html:
-    theme: 
-      light: cosmo
-      dark: slate
+    theme: cosmo
+#      light: cosmo
+#      dark: slate  low visibility for DT tables with dark them as currently configured
     css: styles.css
     page-layout: full
 
