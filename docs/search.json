@@ -46,27 +46,27 @@
     "href": "posts/data-set-metadata/index.html",
     "title": "Data Set Metadata",
     "section": "",
-    "text": "Code\ndatasets &lt;- metadata_datasets_all %&gt;% mutate(desc_words = str_count(description, \"\\\\w+\"),\n                                 snippet_words = str_count(snippet, \"\\\\w+\"),\n                                 credit_words = str_count(access_information, \"\\\\w+\"),\n                                 tags = str_split(str_remove_all(tags, '\\\\{|\\\\}'), \",\")) %&gt;%\n  mutate(tag_words = (unlist(lengths(tags)))) %&gt;%\n  select(feature_service_name, owner, desc_words, snippet_words, tag_words, credit_words, creation_date) %&gt;%\n  arrange(feature_service_name)"
+    "text": "Code\nmetadata_datasets_all &lt;- \n  tbl(con, in_schema(\"dbt_metadata\", \"datasets\")) %&gt;%\n# select(layer_name, type, service_item_id, description, ) %&gt;%\n#  arrange(layer_name) %&gt;%\n  collect()\nCode\nmetadata_datasets &lt;- metadata_datasets_all %&gt;% \n  mutate(desc_words = str_count(description, \"\\\\w+\"),\n                                 snippet_words = str_count(snippet, \"\\\\w+\"),\n                                 credit_words = str_count(access_information, \"\\\\w+\"),\n                                 tags = str_split(str_remove_all(tags, '\\\\{|\\\\}'), \",\")) %&gt;%\n  mutate(tag_words = (unlist(lengths(tags)))) %&gt;%\n  select(feature_service_name, owner, desc_words, snippet_words, tag_words, credit_words, creation_date) %&gt;%\n  arrange(feature_service_name)"
   },
   {
     "objectID": "posts/data-set-metadata/index.html#all-data-sets",
     "href": "posts/data-set-metadata/index.html#all-data-sets",
     "title": "Data Set Metadata",
     "section": "All Data Sets",
-    "text": "All Data Sets\nItem count: 153"
+    "text": "All Data Sets\nItem count: 153\n\n\nCode\nlibrary(skimr)\n\nmetadata_datasets %&gt;%\n    skim(.data_name = \"dataset-level metadata\")\n\n\n\nData summary\n\n\nName\ndataset-level metadata\n\n\nNumber of rows\n153\n\n\nNumber of columns\n7\n\n\n_______________________\n\n\n\nColumn type frequency:\n\n\n\ncharacter\n2\n\n\nnumeric\n4\n\n\nPOSIXct\n1\n\n\n________________________\n\n\n\nGroup variables\nNone\n\n\n\nVariable type: character\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmin\nmax\nempty\nn_unique\nwhitespace\n\n\n\n\nfeature_service_name\n0\n1\n3\n58\n0\n153\n0\n\n\nowner\n0\n1\n15\n32\n0\n16\n0\n\n\n\nVariable type: numeric\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmean\nsd\np0\np25\np50\np75\np100\nhist\n\n\n\n\ndesc_words\n14\n0.91\n60.55\n95.04\n5\n13\n29\n74\n751\n▇▁▁▁▁\n\n\nsnippet_words\n0\n1.00\n11.15\n7.04\n0\n6\n10\n14\n38\n▆▇▃▁▁\n\n\ntag_words\n0\n1.00\n3.41\n1.38\n1\n3\n3\n4\n9\n▃▇▂▁▁\n\n\ncredit_words\n0\n1.00\n2.09\n4.37\n0\n0\n0\n3\n38\n▇▁▁▁▁\n\n\n\nVariable type: POSIXct\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmin\nmax\nmedian\nn_unique\n\n\n\n\ncreation_date\n0\n1\n2016-07-01 16:19:54\n2023-04-27 20:25:02\n2019-09-30 20:12:31\n148\n\n\n\n\n\nCode\n#  filter(type != \"esriFieldTypeOID\") %&gt;%\n#  filter(feature_service_name != \"Review\") %&gt;%\n#  mutate(column_label = if_else(field_name != field_alias, field_alias, NA)) %&gt;%\n#  select(-c(feature_service_name, layer_name, field_name, field_alias, type)) %&gt;%\n#  skim(.data_name = \"column-level metadata\")"
   },
   {
     "objectID": "posts/data-set-metadata/index.html#opendataadmin-data-sets",
     "href": "posts/data-set-metadata/index.html#opendataadmin-data-sets",
     "title": "Data Set Metadata",
     "section": "OpenDataAdmin Data Sets",
-    "text": "OpenDataAdmin Data Sets\n\n\nCode\ndatasets %&gt;%\n  filter(owner == \"OpenDataAdmin_detroitmi\") %&gt;%\n  select(-owner) %&gt;%\n #  knitr::kable()\n  datatable()"
+    "text": "OpenDataAdmin Data Sets\n\n\nCode\nmetadata_datasets %&gt;%\n  filter(owner == \"OpenDataAdmin_detroitmi\") %&gt;%\n  select(-owner) %&gt;%\n #  knitr::kable()\n  datatable()"
   },
   {
     "objectID": "posts/data-set-metadata/index.html#data-sets-owned-by-others",
     "href": "posts/data-set-metadata/index.html#data-sets-owned-by-others",
     "title": "Data Set Metadata",
     "section": "Data Sets owned by others",
-    "text": "Data Sets owned by others\n\n\nCode\ndatasets %&gt;%\n  filter(owner != \"OpenDataAdmin_detroitmi\") %&gt;%\n # select(-owner) %&gt;%\n #  knitr::kable()\n  datatable()"
+    "text": "Data Sets owned by others\n\n\nCode\nmetadata_datasets %&gt;%\n  filter(owner != \"OpenDataAdmin_detroitmi\") %&gt;%\n # select(-owner) %&gt;%\n #  knitr::kable()\n  datatable()"
   }
 ]

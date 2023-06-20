@@ -1,7 +1,7 @@
 ---
 title: "Data Set Metadata"
 author: "L Sheble"
-date: "2023-06-14"
+date: "2023-06-20"
 categories: [metadata, inventory, to do]
 image: "dataset_record_1.png"
 code-fold: true
@@ -47,7 +47,7 @@ con <- dbConnect(odbc::odbc(), "Warehouse", timeout = 10)
 ```{r}
 #| label: metadata-datasets
 #| cache: true
-#| include: false
+#| include: true
 
 metadata_datasets_all <- 
   tbl(con, in_schema("dbt_metadata", "datasets")) %>%
@@ -70,7 +70,8 @@ metadata_datasets_all %>% datatable()
 ```{r}
 #| label: subset-plus-word-counts
 
-datasets <- metadata_datasets_all %>% mutate(desc_words = str_count(description, "\\w+"),
+metadata_datasets <- metadata_datasets_all %>% 
+  mutate(desc_words = str_count(description, "\\w+"),
                                  snippet_words = str_count(snippet, "\\w+"),
                                  credit_words = str_count(access_information, "\\w+"),
                                  tags = str_split(str_remove_all(tags, '\\{|\\}'), ",")) %>%
@@ -81,28 +82,42 @@ datasets <- metadata_datasets_all %>% mutate(desc_words = str_count(description,
 ```
 
 
+## All Data Sets
 
+Item count: `r dim(metadata_datasets)[1]`
+
+
+```{r}
+library(skimr)
+
+metadata_datasets %>%
+    skim(.data_name = "dataset-level metadata")
+#  filter(type != "esriFieldTypeOID") %>%
+#  filter(feature_service_name != "Review") %>%
+#  mutate(column_label = if_else(field_name != field_alias, field_alias, NA)) %>%
+#  select(-c(feature_service_name, layer_name, field_name, field_alias, type)) %>%
+#  skim(.data_name = "column-level metadata")
+```
 
 ```{r}
 #| include: false
 #| label: select-fields
 
-datasets %>%
+metadata_datasets %>%
   select(feature_service_name, owner, desc_words, snippet_words, tag_words, credit_words, creation_date) %>%
   arrange(feature_service_name) 
   # knitr::kable()
 ```
 
-## All Data Sets
 
-Item count: `r dim(datasets)[1]`
+
 
 
 ## OpenDataAdmin Data Sets
 
 
 ```{r}
-datasets %>%
+metadata_datasets %>%
   filter(owner == "OpenDataAdmin_detroitmi") %>%
   select(-owner) %>%
  #  knitr::kable()
@@ -114,7 +129,7 @@ datasets %>%
 ```{r}
 #| label: other-owners
  
-datasets %>%
+metadata_datasets %>%
   filter(owner != "OpenDataAdmin_detroitmi") %>%
  # select(-owner) %>%
  #  knitr::kable()
