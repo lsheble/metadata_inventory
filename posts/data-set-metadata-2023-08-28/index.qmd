@@ -14,6 +14,8 @@ code-fold: true
 
 data updated 08-28-2023
 
+July count: 42
+
 
 ```{r} 
 #| label: load-libraries
@@ -46,6 +48,7 @@ library(plotly)
 ```{r}
 #| label: db_conxn
 #| include: false
+
 con <- dbConnect(odbc::odbc(), "Warehouse", timeout = 10)
 ```
 
@@ -53,8 +56,8 @@ con <- dbConnect(odbc::odbc(), "Warehouse", timeout = 10)
 
 ```{r}
 #| label: metadata-datasets
-#| cache: true
 #| include: true
+
 
 metadata_datasets_all <- 
   tbl(con, in_schema("dbt_metadata", "datasets")) %>%
@@ -70,7 +73,7 @@ metadata_datasets_all <-
 ```{r}
 #| label: subset-plus-word-counts
 
-metadata_datasets <- metadata_datasets_all %>% 
+metadata_datasets_20230828 <- metadata_datasets_all %>% 
   mutate(desc_words = str_count(description, "\\w+"),
                                  snippet_words = str_count(snippet, "\\w+"),
                                  credit_words = str_count(access_information, "\\w+"),
@@ -84,13 +87,13 @@ metadata_datasets <- metadata_datasets_all %>%
 
 ## All Data Sets
 
-Item count: `r dim(metadata_datasets)[1]`
+Item count: `r dim(metadata_datasets_20230828)[1]`
 
 
 ```{r}
 library(skimr)
 
-metadata_datasets %>%
+metadata_datasets_20230828 %>%
     skim(.data_name = "dataset-level metadata")
 #  filter(type != "esriFieldTypeOID") %>%
 #  filter(feature_service_name != "Review") %>%
@@ -103,7 +106,7 @@ metadata_datasets %>%
 #| include: false
 #| label: select-fields
 
-metadata_datasets %>%
+metadata_datasets_20230828 %>%
   select(feature_service_name, owner, desc_words, snippet_words, tag_words, credit_words, creation_date) %>%
   arrange(feature_service_name) 
   # knitr::kable()
@@ -117,7 +120,7 @@ metadata_datasets %>%
 
 
 ```{r}
-metadata_datasets %>%
+metadata_datasets_20230828 %>%
   filter(owner == "OpenDataAdmin_detroitmi") %>%
   select(-owner) %>%
  #  knitr::kable()
@@ -129,7 +132,7 @@ metadata_datasets %>%
 ```{r}
 #| label: other-owners
  
-metadata_datasets %>%
+metadata_datasets_20230828 %>%
   filter(owner != "OpenDataAdmin_detroitmi") %>%
  # select(-owner) %>%
  #  knitr::kable()

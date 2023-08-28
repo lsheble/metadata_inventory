@@ -12,6 +12,8 @@ code-fold: true
 
 data updated 08-28-2023
 
+July count: 219
+
 
 ```{r} 
 #| label: load-libraries
@@ -50,7 +52,6 @@ con <- dbConnect(odbc::odbc(), "Warehouse", timeout = 10)
 
 ```{r}
 #| label: collect columns
-#| cache: true
 #| include: false
 
 metadata_columns_all <- 
