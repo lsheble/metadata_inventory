@@ -1,0 +1,168 @@
+---
+title: "Data Set Metadata"
+author: "L Sheble"
+date: "2023-09-26"
+categories: [metadata, inventory, dataset records]
+image: "leaves_150728-3f51b5.png"
+code-fold: true
+
+---
+
+
+
+## Data notes
+
+data updated 09-25-2023
+
+July count: 42
+August count: 51
+September count: 54
+
+```{r} 
+#| label: load-libraries
+#| output: false
+#| warning: false
+#| include: false
+library(DBI)
+library(odbc)
+library(dbplyr)
+library(dplyr)
+# library(inspectdf)
+library(stringr)
+library(forcats)
+library(ggplot2)
+library(lubridate)
+library(gridExtra)
+library(DT)
+library(plotly)
+# library(funModeling) # replace : see funModeling removal from CRAN note: https://cran.r-project.org/web/packages/funModeling/index.html
+# for now, use: 
+# library(remotes)
+# install_version("funModeling", "1.9")
+# library(ggsankey)
+# library(scales)
+```
+
+
+
+
+```{r}
+#| label: db_conxn
+#| include: false
+
+con <- dbConnect(odbc::odbc(), "Warehouse", timeout = 10)
+```
+
+
+
+```{r}
+#| label: metadata-datasets
+#| include: true
+
+
+metadata_datasets_all <- 
+  tbl(con, in_schema("dbt_metadata", "datasets")) %>%
+# select(layer_name, type, service_item_id, description, ) %>%
+#  arrange(layer_name) %>%
+  collect()
+
+```
+
+
+
+
+```{r}
+#| label: subset-plus-word-counts
+
+metadata_datasets_20230828 <- metadata_datasets_all %>% 
+  mutate(desc_words = str_count(description, "\\w+"),
+                                 snippet_words = str_count(snippet, "\\w+"),
+                                 credit_words = str_count(access_information, "\\w+"),
+                                 tags = str_split(str_remove_all(tags, '\\{|\\}'), ",")) %>%
+  mutate(tag_words = (unlist(lengths(tags)))) %>%
+  select(feature_service_name, owner, desc_words, snippet_words, tag_words, credit_words, creation_date) %>%
+  arrange(feature_service_name) 
+  
+```
+
+
+## All Data Sets
+
+Item count: `r dim(metadata_datasets_20230828)[1]`
+
+
+```{r}
+library(skimr)
+
+metadata_datasets_20230828 %>%
+    skim(.data_name = "dataset-level metadata")
+#  filter(type != "esriFieldTypeOID") %>%
+#  filter(feature_service_name != "Review") %>%
+#  mutate(column_label = if_else(field_name != field_alias, field_alias, NA)) %>%
+#  select(-c(feature_service_name, layer_name, field_name, field_alias, type)) %>%
+#  skim(.data_name = "column-level metadata")
+```
+
+```{r}
+#| include: false
+#| label: select-fields
+
+metadata_datasets_20230828 %>%
+  select(feature_service_name, owner, desc_words, snippet_words, tag_words, credit_words, creation_date) %>%
+  arrange(feature_service_name) 
+  # knitr::kable()
+```
+
+
+
+
+
+## OpenDataAdmin Data Sets
+
+
+```{r}
+metadata_datasets_20230828 %>%
+  filter(owner == "OpenDataAdmin_detroitmi") %>%
+  select(-owner) %>%
+ #  knitr::kable()
+  datatable()
+```
+
+
+## Data Sets owned by others
+```{r}
+#| label: other-owners
+ 
+metadata_datasets_20230828 %>%
+  filter(owner != "OpenDataAdmin_detroitmi") %>%
+ # select(-owner) %>%
+ #  knitr::kable()
+  datatable()
+```
+
+
+
+```{sql}
+#| connection: con
+#| include: false
+
+SELECT owner, feature_service_name, creation_date, snippet, tags
+FROM dbt_metadata.datasets
+WHERE owner NOT LIKE 'OpenDataAdmin_detroitmi'
+ORDER BY owner
+
+```
+
+
+```{sql}
+#| connection: con 
+#| include: false
+
+SELECT owner, feature_service_name, creation_date, snippet, tags
+FROM dbt_metadata.datasets
+WHERE feature_service_name ILIKE 'Review%'
+ORDER BY owner
+
+```
+
+
