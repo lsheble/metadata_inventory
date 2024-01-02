@@ -1,7 +1,7 @@
 ---
 title: "Column Metadata"
 author: "L Sheble"
-date: "2023-11-28"
+date: "2024-01-02"
 categories: [metadata, inventory, columns, fields, update]
 image: "leaf_150867-3f51b5.png"
 code-fold: true
@@ -10,7 +10,7 @@ code-fold: true
 
 ## Data notes
 
-data updated 11-28-2023
+data updated 01-02-2024
 
 | date       |    month | count  |
 |------------|----------|-------:|

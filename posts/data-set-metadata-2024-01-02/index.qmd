@@ -9,7 +9,7 @@ code-fold: true
 
 ## Data notes
 
-data updated 11-28-2023
+data updated 01-02-2024
 
 | date       | month     | count |
 |------------|-----------|------:|
