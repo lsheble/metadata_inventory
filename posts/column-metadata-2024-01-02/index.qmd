@@ -1,0 +1,163 @@
+---
+title: "Column Metadata"
+author: "L Sheble"
+date: "2023-11-28"
+categories: [metadata, inventory, columns, fields, update]
+image: "leaf_150867-3f51b5.png"
+code-fold: true
+---
+
+
+## Data notes
+
+data updated 11-28-2023
+
+| date       |    month | count  |
+|------------|----------|-------:|
+|            | July     | 219    |
+| 2023-08-28 | August   | 303    |
+| 2023-09-26 | September| 366    |
+| 2023-10-27 | October  | 398    |
+| 2023-11-28 | November | 484    |
+| 2024-01-02 | January  |    |
+
+
+
+```{r} 
+#| label: load-libraries
+#| output: false
+#| warning: false
+#| include: false
+
+library(DBI)
+library(odbc)
+library(dbplyr)
+library(dplyr)
+# library(inspectdf)
+library(stringr)
+library(forcats)
+library(ggplot2)
+# library(lubridate)
+library(gridExtra)
+library(DT)
+library(plotly)
+library(skimr)
+# library(janitor)
+# library(ggsankey)
+# library(scales)
+```
+
+
+
+
+```{r}
+#| label: db_conxn
+#| include: false
+con <- dbConnect(odbc::odbc(), "Warehouse", timeout = 10)
+```
+
+
+
+```{r}
+#| label: collect columns
+#| include: false
+
+metadata_columns_all <- 
+  tbl(con, in_schema("dbt_metadata", "columns")) %>%
+  select(everything()) %>%
+  collect()
+
+```
+
+
+## Overview: All Columns
+
+
+Filtered out rows that matched
+
+- type = "esriFieldTypeOID"
+- feature_service_name = "Review"
+ 
+
+Future
+
+- join on feature_service_name to identify which are owned by OpenDataAdmin and which are not
+- maybe drop deprecated data sets
+
+
+```{r}
+#| label: column_summary
+metadata_columns_all %>%
+  filter(type != "esriFieldTypeOID") %>%
+  filter(feature_service_name != "Review") %>%
+  mutate(column_label = if_else(field_name != field_alias, field_alias, NA)) %>%
+  select(-c(feature_service_name, layer_name, field_name, field_alias, type)) %>%
+  skim(.data_name = "column-level metadata")
+
+
+```
+
+**Key**
+
+- n_missing: Sum of NA and NULL (i.e. missing) values.
+- complete rate: Sum of values that are not NA or NULL (i.e., missing) values.
+- min: minimum number of characters. 
+- max: maximum number of characters.
+- empty: number of blank values - or empty strings ("").
+- n_unique: number of unique values.
+- whitespace: number of rows containing only whitespace values using the s+ regular expression.
+
+
+## Column-level Metadata, Grouped by Data Set
+
+Columns counts summarized by data set to identify the number of columns ('column_count'), the number of columns that do not yet have descriptions ('to_describe') and the proportion of columns that have been described. 
+
+The identifier column created and assigned by Esri (column data type = "esriFieldTypeOID") is not included in the counts. 
+
+
+
+```{r}
+#| label: columns-by-ds
+
+metadata_columns_all %>%
+ # select(feature_service_name, field_name, field_alias, field_value_type, description) %>%
+  group_by(feature_service_name) %>%
+#  tally(name = "column count") %>%
+  summarise(column_count = n()-1, to_describe = sum(is.na(description))-1 , pct_complete = round((((column_count-to_describe)/column_count)*100), digits = 2), .groups = 'keep') %>%
+  datatable()
+  
+#  summarise(descriptions = n(description))
+```
+
+
+## Search Column-level Metadata
+
+Table that lists the data set, field name, field alias, field value type, and description for each column - or attribute - in odp data sets. Each row is a data set attribute (a.k.a. 'column'). 
+
+
+```{r}
+#| label: all-columns
+
+metadata_columns_all %>%
+  select(feature_service_name, field_name, field_alias, field_value_type, description) %>%
+  arrange(feature_service_name) %>%
+  datatable()
+```
+
+### Valid Column Metadata
+
+Retrieve columns that have a description included in column-level metadata and where that description is not the word "null".
+
+
+```{r}
+metadata_columns_all %>%
+  select(feature_service_name, field_name, field_alias, field_value_type, description) %>%
+  filter(str_length(description) >1 & description != "null") %>%
+  # filter(description == "null") %>%
+  arrange(feature_service_name) %>%
+  datatable()
+
+```
+
+  
+  
