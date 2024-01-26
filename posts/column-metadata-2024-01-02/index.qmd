@@ -19,7 +19,7 @@ data updated 01-02-2024
 | 2023-09-26 | September| 366    |
 | 2023-10-27 | October  | 398    |
 | 2023-11-28 | November | 484    |
-| 2024-01-02 | January  | 569    |
+| 2024-01-02 | December | 569    |
 
 
 

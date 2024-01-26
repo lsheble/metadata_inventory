@@ -18,7 +18,7 @@ data updated 01-02-2024
 | 2023-09-26 | September |    54 |
 | 2023-10-27 | October   |    56 |
 | 2023-11-28 | November  |    59 |
-| 2024-01-02 | January   |    63 |
+| 2024-01-02 | December  |    63 |
 
 ```{r}
 #| label: load-libraries
